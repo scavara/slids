@@ -1,0 +1,9 @@
+[Unit]
+Description=Run microtik2pcap service every minute
+
+[Timer]
+OnCalendar=*:0/1
+Unit=mikrotik2pcap.service
+
+[Install]
+WantedBy=timers.target

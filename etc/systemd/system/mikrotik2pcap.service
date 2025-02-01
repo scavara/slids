@@ -1,0 +1,12 @@
+[Unit]
+Description=mikrotik2pcap service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/mnt/mytmpfs
+ExecStart=suricata -r /mnt/mytmpfs/capture.pcap -c /etc/suricata/suricata.yaml
+ExecStartPost=python3 /mnt/mytmpfs/log_cleaner.py
+
+[Install]
+WantedBy=multi-user.target

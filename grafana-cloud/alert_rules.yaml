@@ -1,0 +1,127 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: IDS
+      folder: IDS
+      interval: 5m
+      rules:
+        - uid: eebrf2t9gcj5sa
+          title: Suricata Signature
+          condition: C
+          data:
+            - refId: A
+              queryType: range
+              relativeTimeRange:
+                from: 10800
+                to: 0
+              datasourceUid: grafanacloud-logs
+              model:
+                datasource:
+                    type: loki
+                    uid: grafanacloud-logs
+                direction: backward
+                editorMode: code
+                expr: |-
+                    sum by (signature)(
+                      count_over_time(
+                        {job="suricata_logs",
+                            signature!="SURICATA Applayer Detect protocol only one direction",
+                            signature!="SURICATA Applayer Wrong direction first Data",
+                            signature!="SURICATA HTTP unable to match response to request",
+                            signature!="SURICATA HTTP Unexpected Request body",
+                            signature!="SURICATA STREAM 3way handshake SYNACK with wrong ack",
+                            signature!="SURICATA STREAM 3way handshake wrong seq wrong ack",
+                            signature!="SURICATA STREAM bad window update",
+                            signature!="SURICATA STREAM CLOSEWAIT FIN out of window",
+                            signature!="SURICATA STREAM ESTABLISHED invalid ack",
+                            signature!="SURICATA STREAM ESTABLISHED packet out of window",
+                            signature!="SURICATA STREAM excessive retransmissions",
+                            signature!="SURICATA STREAM FIN1 FIN with wrong seq",
+                            signature!="SURICATA STREAM FIN invalid ack",
+                            signature!="SURICATA STREAM FIN out of window",
+                            signature!="SURICATA STREAM Last ACK with wrong seq",
+                            signature!="SURICATA STREAM Packet with invalid ack",
+                            signature!="SURICATA STREAM Packet with invalid timestamp",
+                            signature!="SURICATA STREAM SHUTDOWN RST invalid ack",
+                            signature!="SURICATA STREAM TIMEWAIT ACK with wrong seq",
+                            signature!="SURICATA TCPv4 invalid checksum",
+                            signature!="SURICATA TLS multiple SNI extensions"
+                        }[1h]
+                      )
+                    ) > bool 0
+                instant: true
+                intervalMs: 1000
+                legendFormat: '{{singnature}}'
+                maxDataPoints: 43200
+                queryType: range
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                settings:
+                    mode: replaceNN
+                    replaceWithValue: 0
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3bwo1jl6bcwa
+          panelId: 6
+          noDataState: NoData
+          execErrState: Error
+          for: 5m
+          annotations:
+            __dashboardUid__: ce3bwo1jl6bcwa
+            __panelId__: "6"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
